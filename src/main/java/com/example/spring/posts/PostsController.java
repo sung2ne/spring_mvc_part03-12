@@ -28,16 +28,17 @@ public class PostsController {
     @PostMapping("/create")
     public String createPost(PostsVo postsVo, RedirectAttributes redirectAttributes) {
         boolean created = postsService.create(postsVo);
+
         if (created) {
             redirectAttributes.addFlashAttribute("successMessage", "게시글이 등록되었습니다.");
             return "redirect:/posts/";
-        } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "게시글 등록에 실패했습니다.");
-            return "redirect:/posts/create";
         }
+
+        redirectAttributes.addFlashAttribute("errorMessage", "게시글 등록에 실패했습니다.");
+        return "redirect:/posts/create";
     }
 
-    // 게시글 목록
+    // 게시글 목록 (화면, GET)
     @GetMapping("/")
     public String listGet(Model model) {
         List<PostsVo> postsVoList = postsService.list();
@@ -45,7 +46,7 @@ public class PostsController {
         return "posts/list";
     }
 
-    // 게시글 보기
+    // 게시글 보기 (화면, GET)
     @GetMapping("/{id}")
     public String readGet(@PathVariable("id") int id, Model model) {
         model.addAttribute("postsVo", postsService.read(id));
@@ -63,23 +64,27 @@ public class PostsController {
     @PostMapping("/{id}/update")
     public String updatePost(@PathVariable("id") int id, PostsVo postsVo, RedirectAttributes redirectAttributes) {
         postsVo.setId(id);
+
         if (postsService.update(postsVo)) {
             redirectAttributes.addFlashAttribute("successMessage", "게시글이 수정되었습니다.");
             return "redirect:/posts/" + id;
         }
+
         redirectAttributes.addFlashAttribute("errorMessage", "게시글 수정에 실패했습니다.");
         return "redirect:/posts/" + id + "/update";
     }
 
-    // 게시글 삭제
+    // 게시글 삭제 (처리, POST)
     @PostMapping("/{id}/delete")
     public String deletePost(@PathVariable("id") int id, PostsVo postsVo, RedirectAttributes redirectAttributes) {
         postsVo.setId(id);
         boolean deleted = postsService.delete(postsVo);
+
         if (deleted) {
             redirectAttributes.addFlashAttribute("successMessage", "게시글이 삭제되었습니다.");
             return "redirect:/posts/";
         }
+        
         redirectAttributes.addFlashAttribute("errorMessage", "게시글 삭제에 실패했습니다.");
         return("redirect:/posts/" + id);
     }
